@@ -73,7 +73,7 @@ function bindEvent() {
       // 提交给后台保存学生信息
       transferData({
         method: 'get',
-        url: '/api/student/addStudent',
+        url: '/CameronVeegee/CameronVeegee.student',
         data: dataStr,
         success: function (res) {
           alert('新增成功');
@@ -110,7 +110,7 @@ function bindEvent() {
         if (isDel) {
           transferData({
             method: 'get',
-            url: '/api/student/delBySno',
+            url: '/CameronVeegee/CameronVeegee.student',
             data: 'sNo='+student.sNo +'&',
             success: function () {
               alert('删除成功');
@@ -148,7 +148,7 @@ function bindEvent() {
        // 提交给后台保存学生信息
        transferData({
          method: 'get',
-         url: '/api/student/updateStudent',
+         url: '/CameronVeegee/CameronVeegee.student',
          data: dataStr,
          success: function (res) {
            alert('修改成功');
@@ -271,7 +271,7 @@ function getFormData(form) {
  *          
  */
 function transferData(options) {
-  ajax(options.method || 'GET', 'http://open.duyiedu.com' + options.url, options.data + 'appkey=1337455341_1613911715375',
+  ajax(options.method || 'GET', 'https://github.com/' + options.url, options.data + 'appkey=1337455341_1613911715375',
     function (res) {
       if (res.status === 'fail') {
         alert(res.msg);
@@ -286,7 +286,7 @@ function transferData(options) {
 function getTableData() {
   transferData({
     method: 'get',
-    url: '/api/student/findAll',
+    url: '/CameronVeegee/CameronVeegee.student',
     data: '',
     success: function (res) {
       tableData = res;
