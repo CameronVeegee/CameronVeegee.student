@@ -9,7 +9,7 @@
  */
 let studentAll = [];
 async function getData() {
-  const res = await fetch('/index.json').then(res => res.json())
+  const res = await fetch('/CameronVeegee.student/index.json').then(res => res.json())
   studentAll = res.results;
   renderTable(res.results)
 }
