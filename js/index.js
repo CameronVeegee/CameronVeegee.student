@@ -73,7 +73,7 @@ function bindEvent() {
       // 提交给后台保存学生信息
       transferData({
         method: 'get',
-        url: '/CameronVeegee/CameronVeegee.student',
+        url: '/CameronVeegee.student',
         data: dataStr,
         success: function (res) {
           alert('新增成功');
@@ -110,7 +110,7 @@ function bindEvent() {
         if (isDel) {
           transferData({
             method: 'get',
-            url: '/CameronVeegee/CameronVeegee.student',
+            url: '/CameronVeegee.student',
             data: 'sNo='+student.sNo +'&',
             success: function () {
               alert('删除成功');
@@ -286,7 +286,7 @@ function transferData(options) {
 function getTableData() {
   transferData({
     method: 'get',
-    url: '/CameronVeegee/CameronVeegee.student',
+    url: '/CameronVeegee.student',
     data: '',
     success: function (res) {
       tableData = res;
