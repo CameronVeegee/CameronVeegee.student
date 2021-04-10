@@ -148,7 +148,7 @@ function bindEvent() {
        // 提交给后台保存学生信息
        transferData({
          method: 'get',
-         url: '/CameronVeegee/CameronVeegee.student',
+         url: '/CameronVeegee.student',
          data: dataStr,
          success: function (res) {
            alert('修改成功');
