@@ -1,3 +1,4 @@
+
 /**
  *
  * @param {String} method 请求方式  不区分大小写
@@ -6,37 +7,12 @@
  * @param {Function} cb     成功的回调函数 callback: 回调函数
  * @param {Boolean} isAsync 是否异步 true 是异步  false 代表同步
  */
-function ajax(method, url, data, cb, isAsync) {
-  // get   url + '?' + data
-  // post
-  var xhr = null;
-  if (window.XMLHttpRequest) {
-    xhr = new XMLHttpRequest();
-  } else {
-    xhr = new ActiveXObject("Microsoft.XMLHTTP");
-  }
-
-  // xhr.readyState    1 - 4  监听是否有响应
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == 4) {
-      if (xhr.status == 200) {
-        cb(JSON.parse(xhr.responseText));
-      }
-    }
-  };
-  method = method.toUpperCase();
-  if (method == "GET") {
-    xhr.open(method, url + "?" + data, isAsync);
-    xhr.send();
-  } else if (method == "POST") {
-    xhr.open(method, url, isAsync);
-    // key=value&key1=valu1
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.send(data);
-  }
+let studentAll = [];
+async function getData() {
+  const res = await fetch('/index.json').then(res => res.json())
+  studentAll = res.results;
+  renderTable(res.results)
 }
-// 表格数据
-var tableData = [];
 
 // bindEvent： 绑定事件函数
 function bindEvent() {
@@ -64,25 +40,11 @@ function bindEvent() {
     var formData = getFormData(form);
     if (formData.status === 'success') {
       // 当前添加学生的信息
-      var data = formData.data;
-      // 当前学生信息数据转换成字符串的结构
-      var dataStr = '';
-      for (var prop in data) {
-        dataStr += prop + '=' + data[prop] + '&';
-      }
-      // 提交给后台保存学生信息
-      transferData({
-        method: 'get',
-        url: '/CameronVeegee.student',
-        data: dataStr,
-        success: function (res) {
-          alert('新增成功');
-          getTableData();
-          location.hash = '#student-list';
-      
-        }
-      });
-
+      var student = formData.data;
+      studentAll.push(student)
+      alert('新增成功');
+      location.hash = '#student-list'
+      renderTable(studentAll)
     } else {
       alert(formData.msg);
     }
@@ -98,25 +60,18 @@ function bindEvent() {
       // console.log(e.target.getAttribute('data-index'))
       // 当前点击的编辑对应学生的索引值
       var index = e.target.dataset.index;
-    // 判断当前按钮是不是编辑按钮
+      // 判断当前按钮是不是编辑按钮
       if (e.target.classList.contains('edit')) {
         // 拿到当前学生的数据 并且渲染弹窗数据
-        renderEditForm(tableData[index]);
+        renderEditForm(studentAll[index]);
         modal.style.display = 'block';
       } else {
-        var student = tableData[index];
+        var student = studentAll[index];
         // 删除的操作  isDel： 是否删除  true 为是  false为否
         var isDel = confirm('确认删除学号为:' + student.sNo + '的学生信息嘛？');
         if (isDel) {
-          transferData({
-            method: 'get',
-            url: '/CameronVeegee.student',
-            data: 'sNo='+student.sNo +'&',
-            success: function () {
-              alert('删除成功');
-              getTableData();
-            }
-          })
+          studentAll = studentAll.filter((data) => Number(data.sNo) != Number(student.sNo));
+          renderTable(studentAll);
         }
       }
     }
@@ -130,36 +85,30 @@ function bindEvent() {
   var studentEditBtn = document.getElementById('student-edit-btn');
 
   studentEditBtn.onclick = function (e) {
-     // 阻止默认刷新页面的行为
-     e.preventDefault();
-     // 并且校验规则
-     // 获取表单元素
-     var form = document.getElementById('student-edit-form');
-     // 获取表单元素下面的数据 +  数据校验 
-     var formData = getFormData(form);
-     if (formData.status === 'success') {
-       // 当前添加学生的信息
-       var data = formData.data;
-       // 当前学生信息数据转换成字符串的结构
-       var dataStr = '';
-       for (var prop in data) {
-         dataStr += prop + '=' + data[prop] + '&';
-       }
-       // 提交给后台保存学生信息
-       transferData({
-         method: 'get',
-         url: '/CameronVeegee.student',
-         data: dataStr,
-         success: function (res) {
-           alert('修改成功');
-           getTableData();
-           modal.style.display = 'none';
-         }
-       });
- 
-     } else {
-       alert(formData.msg);
-     }
+    // 阻止默认刷新页面的行为
+    e.preventDefault();
+    // 并且校验规则
+    // 获取表单元素
+    var form = document.getElementById('student-edit-form');
+    // 获取表单元素下面的数据 +  数据校验 
+    var formData = getFormData(form);
+    if (formData.status === 'success') {
+      // 当前添加学生的信息
+      var student = formData.data;
+      studentAll = studentAll.map(data => {
+        if (data.sNo == student.sNo) {
+          return student
+        } else {
+          return data
+        }
+      })
+      modal.style.display = 'none';
+      alert('修改成功')
+      renderTable(studentAll)
+
+    } else {
+      alert(formData.msg);
+    }
   }
 
 }
@@ -171,6 +120,7 @@ function removeClass(nodeList, className) {
 }
 
 window.onload = function () {
+  getData()
   bindEvent();
   hashToMenu();
   // 浏览器的地址栏中 hash值变化
@@ -270,44 +220,18 @@ function getFormData(form) {
  *          success： 请求成功之后的回调函数  即后台成功处理我的数据的时候要做的总能
  *          
  */
-function transferData(options) {
-  ajax(options.method || 'GET', 'https://cameronveegee.github.io' + options.url, options.data + 'appkey=1337455341_1613911715375',
-    function (res) {
-      if (res.status === 'fail') {
-        alert(res.msg);
-      } else {
-        options.success(res.data);
-      }
-    }, true)
-}
-
-
-// 获取表格数据
-function getTableData() {
-  transferData({
-    method: 'get',
-    url: '/CameronVeegee.student',
-    data: '',
-    success: function (res) {
-      tableData = res;
-      renderTable(res);
-    }
-  })
-}
-
-getTableData();
+// https://cameronveegee.github.io/CameronVeegee.student/index.json
 
 // 渲染页面
 function renderTable(data) {
   // for  forEach  map reduce filter sort 
-
   var str = data.reduce(function fun(pre, ele, index) {
 
     return pre + `<tr>
     <!-- td: 列 -->
     <td>${ele.sNo}</td>
     <td>${ele.name}</td>
-    <td>${ele.sex == 0 ? '男': '女'}</td>
+    <td>${ele.sex == 0 ? '男' : '女'}</td>
     <td>${ele.email}</td>
     <td>${new Date().getFullYear() - ele.birth}</td>
     <td>${ele.phone}</td>
