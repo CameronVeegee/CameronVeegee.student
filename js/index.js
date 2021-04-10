@@ -271,7 +271,7 @@ function getFormData(form) {
  *          
  */
 function transferData(options) {
-  ajax(options.method || 'GET', 'http://open.duyiedu.com' + options.url, options.data + 'appkey=VP_1_1611829731084',
+  ajax(options.method || 'GET', 'http://open.duyiedu.com' + options.url, options.data + 'appkey=1337455341_1613911715375',
     function (res) {
       if (res.status === 'fail') {
         alert(res.msg);
