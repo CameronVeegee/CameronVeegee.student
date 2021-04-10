@@ -271,7 +271,7 @@ function getFormData(form) {
  *          
  */
 function transferData(options) {
-  ajax(options.method || 'GET', 'https://github.com/' + options.url, options.data + 'appkey=1337455341_1613911715375',
+  ajax(options.method || 'GET', 'https://cameronveegee.github.io' + options.url, options.data + 'appkey=1337455341_1613911715375',
     function (res) {
       if (res.status === 'fail') {
         alert(res.msg);
